@@ -1,8 +1,10 @@
 ---
 title: "Caracterización de los usuarios y patrones de uso de la plataforma de autodiagnóstico de ansiedad y depresión de CIJ, 2021-2022."
 author: 
- - MSP Norberto F. Hernández-Llanes, Dirección de Investigación y Enseñanza.
- - Dr. Rodrigo Marín Navarrete, Dirección de Investigación y Enseñanza.
+ - Dr. Rodrigo Marín Navarrete, Dirección de Investigación y Enseñanza. CIJ.
+ - MSP Norberto F. Hernández-Llanes, Dirección de Investigación y Enseñanza. CIJ.
+ - Dr. Ricardo Sánchez Domínguez, Dirección de Investigación y Enseñanza. CIJ.
+ - Mtra. Liliana Templos Nuñez, Dirección de Investigación y Enseñanza. CIJ.
 date: "`r format(Sys.Date(), '%B de %Y', justify = 'left')`"
 header-includes:
   - \usepackage[spanish]{babel}
@@ -781,8 +783,8 @@ mapd <- mapd + geom_sf(aes(fill = tasa), size = 0.3) +
 
   mapd + ggtitle("Gráfica 1: Uso de la plataforma de depresión por entidad federativa y año", subtitle = "Usuarios de la plataforma de autodiagnóstico de CIJ, 2021-2022")
 
-dev.copy(png, file = "Figure1.png")
-dev.off()
+#dev.copy(png, file = "Figure1.png")
+#dev.off()
 ```
 
 [^6]: Los mapas cloropléticos utilizan la progresión del color para representar el valor de una variable de datos en cada región del mapa. Esto proporciona una forma de visualizar valores sobre un área geográfica, que puede mostrar variaciones o patrones en la ubicación visualizada.
@@ -857,8 +859,8 @@ plot_1d <- plot_1d + geom_col() +
   geom_vline(xintercept = 304, color = "red") + guides (x = guide_axis(check.overlap = TRUE)) + theme_bw()
 plot_1d + ggtitle("Gráfica 2: Uso de la plataforma de depresión por dia del año", subtitle = "Usuarios con nivel alto de depresión de la plataforma de autodiagnóstico de CIJ, 2021-2022") 
 
-dev.copy(png, file = "Figure2.png")
-dev.off()
+#dev.copy(png, file = "Figure2.png")
+#dev.off()
 ```
 
 Como se puede observar en la gráfica, a partir del inicio de operaciónes de la plataforma (17 de febrero de 2021) el número de visitas a la plataforma de autodiagnóstico se ha incrementado de forma importante[^7]. Sin embargo, se observó una disminución importante en los días previos al final del año (correspondiente a los meses de noviembre y diciembre), el cual se muestra en la Gráfica con una linea roja vertical.
@@ -878,8 +880,8 @@ plot_horasd <- plot_horasd + geom_bar() +
 
 plot_horasd + ggtitle("Gráfica 3: Uso de la plataforma de depresión por mes y grupo de edad", subtitle = "Usuarios de la plataforma de autodiagnóstico de CIJ, 2021-2022")
 
-dev.copy(png, file = "Figure3.png")
-dev.off()
+#dev.copy(png, file = "Figure3.png")
+#dev.off()
 ```
 
 Como se puede apreciar, y como se describió en la grafica anterior, los primeros meses del año (enero y febrero) fueron los de mayor uso de la plataforma de depresión para todos los usuarios, pero especialmente para el grupo de usuarios < 18 años de edad. 
@@ -900,8 +902,8 @@ plot5_dep <- plot5_dep + geom_col(aes(fill = Dia)) +
   viridis::scale_color_viridis(option = "mako", direction = -1)
 plot5_dep + ggtitle("Gráfica 4: Uso de la plataforma de depresión por día de la semana", subtitle = "Usuarios de la plataforma de autodiagnóstico de CIJ, 2021-2022")
 
-dev.copy(png, file = "Figure4.png")
-dev.off()
+#dev.copy(png, file = "Figure4.png")
+#dev.off()
 ```
 
 Finalmente, la Gráfica 5 mostró la distribución de visitas a la plataforma por grupo de edad, día de la semana y horario. La principal franja horaria en la que los usuarios menores de 18 años utilizaron la platafoma de autodiagnóstico de depresión es de las 12: a 17:59 hrs, seguido de las 18:00 a 23:59 y después de 6:00 a 11:59 hrs.
@@ -917,46 +919,144 @@ plot_diasd <- plot_diasd + geom_bar(aes(fill = horauso)) + theme(legend.position
   facet_grid( . ~ grupoedad)
 plot_diasd + ggtitle("Gráfica 5: Uso de la plataforma de depresión por hora y dia de la semana", subtitle = "Usuarios de la plataforma de autodiagnóstico de CIJ, 2021-2022")
 
-dev.copy(png, file = "Figure5.png")
-dev.off()
+#dev.copy(png, file = "Figure5.png")
+#dev.off()
 ```
+
+
+### Uso de los servicios de la herramienta de depresión
+
+Al analizar las solicitudes de atención de los usuarios de la plataforma de depresión, se encontró que `r sum(depre2$solici_aten)` usuarios dejaron sus datos para atención, lo que corresponde al `r format((sum(depre2$solici_aten)/105416)*100, digits = 3)`% del total de usuarios de la plataforma. La diferencias por edad se muestran en la Tabla 6:
+
+```{r t5_atenciond, echo = FALSE, message = FALSE, warning = FALSE}
+#Obtenemos prevalencia de severidad x sexo en los menores de 18 años
+t5_dep18 <- as.data.frame(table(menor18d$solici_atend, menor18d$RESULTADO))
+names(t5_dep18) <- c("atend", "nivel", "n_18d")
+t5_dep18 <- t5_dep18 %>% group_by(atend) %>% 
+  mutate(prop_18d = round(proportions(n_18d)*100, digits = 1)) %>% 
+  ungroup
+t5_dep18$id <- paste(t5_dep18$nivel, t5_dep18$atend, sep="-")
+#Obtenemos prevalencia de severidad x sexo en el grupo de 18 a 25 años
+t5_dep25 <- as.data.frame(table(ad1825d$solici_atend, ad1825d$RESULTADO))
+names(t5_dep25) <- c("atend", "nivel", "n_25d")
+t5_dep25 <- t5_dep25 %>% group_by(atend) %>% 
+  mutate(prop_25d = round(proportions(n_25d)*100, digits = 1)) %>% 
+  ungroup
+t5_dep25$id <- paste(t5_dep25$nivel, t5_dep25$atend, sep="-")
+#Obtenemos prevalencia de severidad en el grupo de 26 a 45 años
+t5_dep45 <- as.data.frame(table(ad2645d$solici_atend, ad2645d$RESULTADO))
+names(t5_dep45) <- c("atend", "nivel", "n_45d")
+t5_dep45 <- t5_dep45 %>% group_by(atend) %>% 
+  mutate(prop_45d = round(proportions(n_45d)*100, digits = 1)) %>% 
+  ungroup
+t5_dep45$id <- paste(t5_dep45$nivel, t5_dep45$atend, sep="-")
+#Obtenemos prevalencia de severidad en el grupo de 46 a 59 años
+t5_dep59 <- as.data.frame(table(ad4659d$solici_atend, ad4659d$RESULTADO))
+names(t5_dep59) <- c("atend", "nivel", "n_59d")
+t5_dep59 <- t5_dep59 %>% group_by(atend) %>% 
+  mutate(prop_59d = round(proportions(n_59d)*100, digits = 1)) %>% 
+  ungroup
+t5_dep59$id <- paste(t5_dep59$nivel, t5_dep59$atend, sep="-")
+#Obtenemos prevalencia de severidad en el grupo de mayores de 60 años
+t5_dep60 <- as.data.frame(table(ad60d$solici_atend, ad60d$RESULTADO))
+names(t5_dep60) <- c("atend", "nivel", "n_60d")
+t5_dep60 <- t5_dep60 %>% group_by(atend) %>% 
+  mutate(prop_60d = round(proportions(n_60d)*100, digits = 1)) %>% 
+  ungroup
+t5_dep60$id <- paste(t5_dep60$nivel, t5_dep60$atend, sep="-")
+
+#Creamos la tabla con las columnas compartidas
+t5_dep <- merge(t5_dep18, t5_dep25, by = "id")
+t5_dep$atend.y <- NULL
+t5_dep$nivel.y <- NULL
+t5_dep <- merge( t5_dep, t5_dep45, by = "id")
+t5_dep$atend.x <- NULL
+t5_dep$nivel <- NULL
+t5_dep <- merge( t5_dep, t5_dep59, by = "id")
+t5_dep$indigenismo <- NULL
+t5_dep$nivel <- NULL
+t5_dep <- merge( t5_dep, t5_dep60, by = "id")
+t5_dep$atend.y <- NULL
+t5_dep$nivel <- NULL
+t5_dep$id <- NULL
+
+#t5_dep$total <- t5_dep$n_18 + t5_dep$n_25 +   t5_dep$n_45 + 
+#  t5_dep$n_59 + t5_dep$n_60
+
+#atend_si <- sum(t5_dep$total[t5_dep$atend.x == TRUE],na.rm=TRUE)
+#atend_no <- sum(t5_dep$total[t5_dep$atend.x == FALSE],na.rm=TRUE)
+
+
+#t5_dep$sum <- NA
+#t5_dep$sum[t5_dep$atend.x == TRUE] <-  atend_si
+#t5_dep$sum[t5_dep$atend.x == FALSE] <-  atend_no
+
+#t5_dep$prop <- NA
+#t5_dep$prop <- format((t5_dep$total/t5_dep$sum)*100, digits = 3)
+#t5_dep$sum <- NULL
+
+h5 <- subset(t5_dep, atend.x == TRUE)
+t5_chi2si <- chisq.test(matrix(data = c(h5$n_18, h5$n_25, h5$n_45, 
+                                        h5$n_59, h5$n_60), ncol = 5))
+
+tx5_chi2si <- paste0("Chi2 Buscó_atención TRUE= ",
+                     format(t5_chi2si$statistic, nsmall = 3), 
+                   "; ", "df = ", t5_chi2si$parameter, "; ", 
+                   "valor p = ", format(t5_chi2si$p.value, nsmall = 5,
+                                        scientific = TRUE))
+
+m5 <- subset(t5_dep, atend.x == FALSE)
+t5_chi2no <- chisq.test(matrix(data = c(m5$n_18, m5$n_25, m5$n_45, 
+                                        m5$n_59, m5$n_60), ncol = 5))
+
+tx5_chi2no <- paste0("Chi2 Buscó_atención FALSE= ", 
+                     format(t5_chi2no$statistic, 
+                            nsmall = 3), "; ", "df = ", 
+                     t5_chi2no$parameter, "; ", "valor p = ", 
+                     format(t5_chi2no$p.value, nsmall = 5, 
+                            scientific = TRUE))
+#Imprimimos la tabla
+t5_dep$atend.x <- NULL
+t5_dep %>% arrange(factor
+                    (nivel.x, levels = c("Bajo", "Leve", "Medio", "Alto"))) %>%
+  group_by(atend) %>%
+  gt() %>% 
+  tab_header( title = "Tabla 5: Busqueda de atención en usuarios con sintomatología depresiva.", 
+              subtitle = "Plataforma de autodiagnóstico de CIJ, 2021-2022.") %>%
+    tab_spanner( label = "< 18 años", 
+                 columns = c(n_18d, prop_18d)) %>%
+    tab_spanner( label = "18 a 25 años", 
+                 columns = c(n_25d, prop_25d)) %>% 
+    tab_spanner( label = "26 a 45 años", 
+                 columns = c(n_45d, prop_45d)) %>%
+    tab_spanner( label = "46 a 59 años", 
+                 columns = c(n_59d, prop_59d)) %>% 
+    tab_spanner( label = "> 60 años", 
+                 columns = c(n_60d, prop_60d)) %>% 
+#    tab_spanner( label = "Total", 
+#                 columns = c(total, prop)) %>%
+  cols_label(nivel.x = "Buscó atención",
+             n_18d = "n", prop_18d = "%",
+             n_25d = "n", prop_25d = "%",
+             n_45d = "n", prop_45d = "%",
+             n_59d = "n", prop_59d = "%",
+             n_60d = "n", prop_60d = "%") %>%
+#             total = "n", prop = "%") %>%  
+  tab_source_note(source_note = tx5_chi2no) %>%
+  tab_source_note(source_note = tx5_chi2si) %>%
+  summary_rows( groups = TRUE, 
+                columns = c(n_18d, n_25d, n_45d, n_59d, n_60d), 
+                fns = list(Total = ~sum(.)), formatter = fmt_number, 
+                use_seps = FALSE, decimal = 0) %>%
+  grand_summary_rows( columns = c(n_18d, n_25d, n_45d, n_59d, n_60d), 
+                fns = list(Total = ~sum(.)), formatter = fmt_number, 
+                use_seps = FALSE, decimal = 0)
+```
+
+El tiempo promedio que tardaron los usuarios en recibir atención (ya sea presencial o virtual) por parte del personal de CIJ fue de `r format(mean(depre2$DIAS.TRANSCURRIDOS, na.rm=TRUE), digits = 2)` días, con una desviación estándar de `r format(sd(depre2$DIAS.TRANSCURRIDOS, na.rm=TRUE), digits = 2)` dias.
 
 \newpage
 
-### Uso de los servicios de la herramienta de depresión
-```{r usr_atenciónd, echo = FALSE, message = FALSE, warning = FALSE}
-depre2$atencion <- FALSE
-depre2$atencion[!is.na(depre2$MUNICIPIO)] <- TRUE
-```
-Al analizar las solicitudes de atención de los usuarios de la plataforma de depresión, se encontró que `r sum(depre2$atencion)` usuarios dejaron sus datos para atención, lo que corresponde al `r format((sum(depre2$atencion)/117289)*100, digits = 3)`% del total de usuarios de la plataforma. La diferencias por edad se muestran en la Tabla 6:
-
-```{r t5_atenciond, echo = FALSE, message = FALSE, warning = FALSE}
-library(reshape2)
-usod <- as.data.frame(table(depre2$grupoedad, depre2$atencion))
-names(usod) <- c("Grupo_edad","Solicitud_atencion", "n")
-t5_usod <- reshape2::dcast(usod, formula = Grupo_edad ~ Solicitud_atencion, value.var ="n", fill=0)
-names(t5_usod) <- c("Grupo_edad", "No_atencion", "Si_atencion")
-t5_usod$propsi <- format(t5_usod$Si_atencion/(t5_usod$Si_atencion+t5_usod$No_atencion)*100, digits = 3)
-t5_usod$propno <- format(t5_usod$No_atencion/(t5_usod$Si_atencion+t5_usod$No_atencion)*100, digits = 3)
-
-t5_usod %>%  
-  gt() %>% 
-  tab_header( 
-    title = "Tabla 5: Total de solicitudes de atención por depresión.",
-    subtitle = "Usuarios de la plataforma de autodiagnóstico de CIJ, 2021-2022") %>%
-  cols_label(Grupo_edad = "Grupo de edad",
-             Si_atencion = "n", propsi = "%",
-             No_atencion = "n", propno = "%") %>%
-  tab_spanner(label = "Si solicitó atención", 
-              columns = c(Si_atencion, propsi)) %>%
-  tab_spanner(label = "No solicitó atención", 
-              columns = c(No_atencion, propno))
-
-
-
-```
-
-El tiempo promedio que tardaron los usuarios en recibir atención (ya sea presencial o virtual) por parte del personal de CIJ fue `r format(mean(depre2$DIAS.TRANSCURRIDOS, na.rm=TRUE), digits = 2)` con una desviación estándar de `r format(sd(depre2$DIAS.TRANSCURRIDOS, na.rm=TRUE), digits = 2)` dias.
 
 ## **Ansiedad**
 
@@ -1008,7 +1108,7 @@ Al igual que lo observado en los usuarios de la herramienta de depresión, el gr
 
 #### a) Por nivel de severidad  
 
-Al analizar el nivel de sintomatología ansiosa (Tabla 5), se encontró que en promedio `r format(x = sum(t5_seva$total[t5_seva$nivel == "Alto"], t5_seva$total[t5_seva$nivel == "Medio"])/sum(t5_seva$total)*100, digits = 3)`% de los usuarios presentaron sintomatología ansiosa en nivel media-alta, con diferencias importantes y estadísticamente significativas entre los diferentes grupos de edad (valor p \< 0.001).
+Al analizar el nivel de sintomatología ansiosa (Tabla 6), se encontró que en promedio `r format(x = sum(t5_seva$total[t5_seva$nivel == "Alto"], t5_seva$total[t5_seva$nivel == "Medio"])/sum(t5_seva$total)*100, digits = 3)`% de los usuarios presentaron sintomatología ansiosa en nivel media-alta, con diferencias importantes y estadísticamente significativas entre los diferentes grupos de edad (valor p \< 0.001).
 
 Al analizar las diferencias por grupo de edad, encontramos que en el grupo de menores de 18 años el `r t5_seva$prop_18d[t5_seva$nivel == "Alto"] + t5_seva$prop_18d[t5_seva$nivel == "Medio"]`% presentaron sintomatología ansiosa en rangos medio-alto, pero este numero aumentó hasta el `r t5_seva$prop_25d[t5_seva$nivel == "Alto"] + t5_seva$prop_25d[t5_seva$nivel == "Medio"]`% en el grupo de jóvenes, tendencia que disminuye la etapa adulta (`r t5_seva$prop_45d[t5_seva$nivel == "Alto"] + t5_seva$prop_45d[t5_seva$nivel == "Medio"]`% para los adultos jóvenes de 26 a 45 años), disminución que continua aumentando durante el resto del ciclo de vida (`r t5_seva$prop_59d[t5_seva$nivel == "Alto"] + t5_seva$prop_59d[t5_seva$nivel == "Medio"]`% en el grupo de 46 a 59 años y `r t5_seva$prop_60d[t5_seva$nivel == "Alto"] + t5_seva$prop_60d[t5_seva$nivel == "Medio"]`% de adultos mayores de 60 años).
 
@@ -1017,7 +1117,7 @@ Al analizar las diferencias por grupo de edad, encontramos que en el grupo de me
 t5_seva %>% arrange(factor
                     (nivel, levels = c("Bajo", "Leve", "Medio", "Alto"))) %>%
   gt() %>% 
-  tab_header( title = "Tabla 5: Niveles de ansiedad.", 
+  tab_header( title = "Tabla 6: Niveles de ansiedad.", 
               subtitle = "Usuarios de la plataforma de autodiagnóstico de CIJ, 2021-2022") %>%
     tab_spanner( label = "< 18 años", 
                  columns = c(n_18d, prop_18d)) %>%
@@ -1048,7 +1148,7 @@ t5_seva %>% arrange(factor
 
 #### b) Por nivel de severidad y sexo  
 
-La severidad de los síntomas ansiosos asociados al sexo en los diferentes grupos de edad se observan en la Tabla 6. Nuevamente se encontró que las diferencias entre los grupos de edad al interior de cada una de las categoria de sexo fueron estadísticamente significativas, con $\chi^2$ con valores p < 0.001, a excepción del grupo *Otros* que es significativo con valor p < 0.05, como se puede ver en el pie de la Tabla 6.
+La severidad de los síntomas ansiosos asociados al sexo en los diferentes grupos de edad se observan en la Tabla 6. Nuevamente se encontró que las diferencias entre los grupos de edad al interior de cada una de las categoria de sexo fueron estadísticamente significativas, con $\chi^2$ con valores p < 0.001, a excepción del grupo *Otros* que es significativo con valor p < 0.05, como se puede ver en el pie de la Tabla 7.
 
 ```{r sevsex_ans, warning = FALSE}
 #Obtenemos prevalencia de severidad x sexo en los menores de 18 años
@@ -1152,7 +1252,7 @@ t2_ans %>% arrange(factor
                     (nivel.x, levels = c("Bajo", "Leve", "Medio", "Alto"))) %>%
   group_by(sexo.x) %>%
   gt() %>% 
-  tab_header( title = "Tabla 6: Niveles de ansiedad por sexo.", 
+  tab_header( title = "Tabla 7: Niveles de ansiedad por sexo.", 
               subtitle = "Usuarios de la plataforma de autodiagnóstico de CIJ, 2021-2022.") %>%
     tab_spanner( label = "< 18 años", 
                  columns = c(n_18, prop_18)) %>%
@@ -1195,7 +1295,7 @@ En relación con las trayectorias de vida, se observa una disminución de la sin
 
 #### c) Por niveles de severidad y condición de LGBT+  
 
-Los resultados sobre el nivel de severidad de síntomatología ansiosa asociada a condición de LGBT+ se muestran a continuación en la Tabla 7:
+Los resultados sobre el nivel de severidad de síntomatología ansiosa asociada a condición de LGBT+ se muestran a continuación en la Tabla 8:
 
 ```{r sevlgbt_ans, warning = FALSE}
 #Obtenemos prevalencia de severidad x sexo en los menores de 18 años
@@ -1294,7 +1394,7 @@ t3_ans %>% arrange(factor
                     (nivel.x, levels = c("Bajo", "Leve", "Medio", "Alto"))) %>%
   group_by(lgbt.x) %>%
   gt() %>% 
-  tab_header( title = "Tabla 7: Niveles de ansiedad por condición de LGBT+.", 
+  tab_header( title = "Tabla 8: Niveles de ansiedad por condición de LGBT+.", 
               subtitle = "Usuarios de la plataforma de autodiagnóstico de CIJ, 2021-2022.") %>%
     tab_spanner( label = "< 18 años", 
                  columns = c(n_18, prop_18)) %>%
@@ -1337,7 +1437,7 @@ En el grupo de 60 años y más, `r as.numeric(m3a$prop_60[m3a$nivel.x == "Alto"]
 
 #### d) Por niveles de severidad y condición de indigenismo  
 
-La severidad de sintomatología ansiosa por grupo de edad asociada a condición de indigenismo se enumera a continuación en la Tabla 8:
+La severidad de sintomatología ansiosa por grupo de edad asociada a condición de indigenismo se enumera a continuación en la Tabla 9:
 
 ```{r sevindi_ans, warning = FALSE}
 #Obtenemos prevalencia de severidad x sexo en los menores de 18 años
@@ -1436,7 +1536,7 @@ t4_ans %>% arrange(factor
                     (nivel.x, levels = c("Bajo", "Leve", "Medio", "Alto"))) %>%
   group_by(indigenismo.x) %>%
   gt() %>% 
-  tab_header( title = "Tabla 8: Niveles de ansiedad por condición de indigenismo.", 
+  tab_header( title = "Tabla 9: Niveles de ansiedad por condición de indigenismo.", 
               subtitle = "Usuarios de la plataforma de autodiagnóstico de CIJ, 2021-2022.") %>%
     tab_spanner( label = "< 18 años", 
                  columns = c(n_18, prop_18)) %>%
@@ -1566,8 +1666,8 @@ map <- map + geom_sf(aes(fill = tasa), size = 0.3) +
 
 map + ggtitle("Gráfica 6: Uso de la plataforma de ansiedad por entidad federativa y año.", subtitle = "Usuarios de la plataforma de autodiagnóstico de CIJ, 2021-2022")
 
-dev.copy(png, file = "Figure6.png")
-dev.off()
+#dev.copy(png, file = "Figure6.png")
+#dev.off()
 ```
 
 Como se puede apreciar, el uso de la herramienta de autodiagnóstico de ansiedad tuvo un patró de uso más complejo, con estados que aumentaron su uso entre 2021 y 2022, y estados donde se observó el fenómeno contrario.
@@ -1642,8 +1742,8 @@ plot_1a <- plot_1a + geom_col() +
   geom_vline(xintercept = 253) + guides (x = guide_axis(check.overlap = TRUE)) + theme_bw()
 plot_1a + ggtitle("Gráfica 7: Uso de la plataforma de ansiedad por día del año", subtitle = "Usuarios con sintomatología alta de la plataforma de autodiagnóstico de CIJ, 2021-2022")
 
-dev.copy(png, file = "Figure7.png")
-dev.off()
+#dev.copy(png, file = "Figure7.png")
+#dev.off()
 ```
 
 Como se puede apreciar en la Gráfica 7, el uso de la herramienta de ansiedad muestra un patrón de uso constante en el primer semestre del año (con un promedio de `r format(mean(daily_a$alto), digits = 1)` visitas por día de usuarios con sintomatología alta). En el segundo semestre el año, entre los meses de septiembre y octubre, se observa un aumento en el número de vistas diarias, (llegando a alcanzar niveles de hasta 190 usuarios con nivel de ansiedad alto por día). Durante el año 2022, el uso de la plataforma se ha mantenido relativamente constante con picos ocasionales. Al igual que en la plataforma de depresión, la reducción en el uso de la plataforma de ansiedad se observa principalmente en los meses relacionados con las vacaciones de verano, como se aprecia de forma más clara en la Gráfica 8 a continuación:
@@ -1661,8 +1761,8 @@ plot_horas <- plot_horas + geom_bar() +
 
 plot_horas + ggtitle("Gráfica 8: Uso de la pataforma de ansiedad por por mes y grupo de edad", subtitle = "Usuarios de la plataforma de autodiagnóstico de CIJ, 2021-2022")
 
-dev.copy(png, file = "Figure8.png")
-dev.off()
+#dev.copy(png, file = "Figure8.png")
+#dev.off()
 ```
 
 Como ya se mencionó para los usuarios de la plataforma de depresión, para la plataforma de ansiedad también el grupo 14 a 17 años fue el que más utilizó la herramienta, seguido del grupo de 18 a 25 años y de 26 a 45 años. Resaltó además que, los meses con mayor utilización de la plataforma fueron mayo y octubre, mientras que los meses de menor utilización en el caso de los menores de 18 años, son los meses de agosto y septiembre, y para todos los grupos de edad, el uso disminuye significativamente en los meses de diciembre y enero.
@@ -1681,8 +1781,8 @@ plot5_ans <- plot5_ans + geom_col(aes(fill = Dia)) +
   viridis::scale_color_viridis(option = "mako", direction = -1)
 plot5_ans + ggtitle("Gráfica 9: Uso de la herramienta de ansiedad por día de la semana", subtitle = "Usuarios de la plataforma de autodiagnóstico de CIJ, 2021-2022")
 
-dev.copy(png, file = "Figure9.png")
-dev.off()
+#dev.copy(png, file = "Figure9.png")
+#dev.off()
 ```
 
 Finalmente, en la Gráfica 11 se observa nuevaente que los usuarios de la plataforma de autodiagnóstico de ansiedad utilizan principalmente la franja horaria de 12:00 a 17:59 hrs, seguida de la franja de 6:00 a 11:59 hrs., posteriormente la franja horaria de 18:00 a 23:59, y finalmente la franja horaria de 0:00 a 5:59 hrs.
@@ -1698,45 +1798,145 @@ plot_dias <- plot_dias + geom_bar(aes(fill = horauso)) +
   facet_grid( . ~ grupoedad)
 plot_dias + ggtitle("Gráfica 10: Uso de la herramienta de ansiedad por hora y dia de la semana", subtitle = "Usuarios de la plataforma de CIJ, 2021-2022")
 
-dev.copy(png, file = "Figure10.png")
-dev.off()
+#dev.copy(png, file = "Figure10.png")
+#dev.off()
 ```
 
 \newpage
 
 ### Uso de los servicios de la herramienta de ansiedad
-```{r usr_atencióna, echo = FALSE, message = FALSE, warning = FALSE}
-ansi2$atencion <- FALSE
-ansi2$atencion[!is.na(ansi2$MUNICIPIO)] <- TRUE
-```
-Al analizar las solicitudes de atención de los usuarios de la plataforma de ansiedad, se encontró que `r sum(ansi2$atencion)` usuarios dejaron sus datos para atención, lo que corresponde al `r format((sum(ansi2$atencion)/27329)*100, digits = 3)`% del total de usuarios de la plataforma. La diferencias por edad se muestran en la Tabla X:
+
+Al analizar las solicitudes de atención de los usuarios de la plataforma de ansiedad, se encontró que `r sum(ansi2$atencion)` usuarios dejaron sus datos para atención, lo que corresponde al `r format((sum(ansi2$atencion)/27329)*100, digits = 3)`% del total de usuarios de la plataforma. La diferencias por edad se muestran en la Tabla 10:
 
 ```{r t5_atenciona, echo = FALSE, message = FALSE, warning = FALSE}
-library(reshape2)
-usoa <- as.data.frame(table(ansi2$grupoedad, ansi2$atencion))
-names(usoa) <- c("Grupo_edad","Solicitud_atencion", "n")
-t5_usoa <- reshape2::dcast(usoa, formula = Grupo_edad ~ Solicitud_atencion, value.var ="n", fill=0)
-names(t5_usoa) <- c("Grupo_edad", "No_atencion", "Si_atencion")
-t5_usoa$propsi <- format(t5_usoa$Si_atencion/(t5_usoa$Si_atencion+t5_usoa$No_atencion)*100, digits = 3)
-t5_usoa$propno <- format(t5_usoa$No_atencion/(t5_usoa$Si_atencion+t5_usoa$No_atencion)*100, digits = 3)
+#Obtenemos prevalencia de severidad x sexo en los menores de 18 años
+t12_dep18 <- as.data.frame(table(menor18a$solici_atend, menor18a$RESULTADO))
+names(t12_dep18) <- c("atend", "nivel", "n_18d")
+t12_dep18 <- t12_dep18 %>% group_by(atend) %>% 
+  mutate(prop_18d = round(proportions(n_18d)*100, digits = 1)) %>% 
+  ungroup
+t12_dep18$id <- paste(t12_dep18$nivel, t12_dep18$atend, sep="-")
+#Obtenemos prevalencia de severidad x sexo en el grupo de 18 a 25 años
+t12_dep25 <- as.data.frame(table(ad1825a$solici_atend, ad1825a$RESULTADO))
+names(t12_dep25) <- c("atend", "nivel", "n_25d")
+t12_dep25 <- t12_dep25 %>% group_by(atend) %>% 
+  mutate(prop_25d = round(proportions(n_25d)*100, digits = 1)) %>% 
+  ungroup
+t12_dep25$id <- paste(t12_dep25$nivel, t12_dep25$atend, sep="-")
+#Obtenemos prevalencia de severidad en el grupo de 26 a 45 años
+t12_dep45 <- as.data.frame(table(ad2645a$solici_atend, ad2645a$RESULTADO))
+names(t12_dep45) <- c("atend", "nivel", "n_45d")
+t12_dep45 <- t12_dep45 %>% group_by(atend) %>% 
+  mutate(prop_45d = round(proportions(n_45d)*100, digits = 1)) %>% 
+  ungroup
+t12_dep45$id <- paste(t12_dep45$nivel, t12_dep45$atend, sep="-")
+#Obtenemos prevalencia de severidad en el grupo de 46 a 59 años
+t12_dep59 <- as.data.frame(table(ad4659a$solici_atend, ad4659a$RESULTADO))
+names(t12_dep59) <- c("atend", "nivel", "n_59d")
+t12_dep59 <- t12_dep59 %>% group_by(atend) %>% 
+  mutate(prop_59d = round(proportions(n_59d)*100, digits = 1)) %>% 
+  ungroup
+t12_dep59$id <- paste(t12_dep59$nivel, t12_dep59$atend, sep="-")
+#Obtenemos prevalencia de severidad en el grupo de mayores de 60 años
+t12_dep60 <- as.data.frame(table(ad60a$solici_atend, ad60a$RESULTADO))
+names(t12_dep60) <- c("atend", "nivel", "n_60d")
+t12_dep60 <- t12_dep60 %>% group_by(atend) %>% 
+  mutate(prop_60d = round(proportions(n_60d)*100, digits = 1)) %>% 
+  ungroup
+t12_dep60$id <- paste(t12_dep60$nivel, t12_dep60$atend, sep="-")
 
-t5_usoa %>%  
+#Creamos la tabla con las columnas compartidas
+t12_dep <- merge(t12_dep18, t12_dep25, by = "id")
+t12_dep$atend.y <- NULL
+t12_dep$nivel.y <- NULL
+t12_dep <- merge( t12_dep, t12_dep45, by = "id")
+t12_dep$atend.x <- NULL
+t12_dep$nivel <- NULL
+t12_dep <- merge( t12_dep, t12_dep59, by = "id")
+t12_dep$indigenismo <- NULL
+t12_dep$nivel <- NULL
+t12_dep <- merge( t12_dep, t12_dep60, by = "id")
+t12_dep$atend.y <- NULL
+t12_dep$nivel <- NULL
+t12_dep$id <- NULL
+
+#t12_dep$total <- t12_dep$n_18 + t12_dep$n_25 +   t12_dep$n_45 + 
+#  t12_dep$n_59 + t12_dep$n_60
+
+#atend_si <- sum(t12_dep$total[t12_dep$atend.x == TRUE],na.rm=TRUE)
+#atend_no <- sum(t12_dep$total[t12_dep$atend.x == FALSE],na.rm=TRUE)
+
+
+#t12_dep$sum <- NA
+#t12_dep$sum[t12_dep$atend.x == TRUE] <-  atend_si
+#t12_dep$sum[t12_dep$atend.x == FALSE] <-  atend_no
+
+#t12_dep$prop <- NA
+#t12_dep$prop <- format((t12_dep$total/t12_dep$sum)*100, digits = 3)
+#t12_dep$sum <- NULL
+
+h12 <- subset(t12_dep, atend.x == TRUE)
+t12_chi2si <- chisq.test(matrix(data = c(h12$n_18, h12$n_25, h12$n_45, 
+                                        h12$n_59, h12$n_60), ncol = 5))
+
+tx5_chi2si <- paste0("Chi2 Buscó_atención TRUE= ",
+                     format(t12_chi2si$statistic, nsmall = 3), 
+                   "; ", "df = ", t12_chi2si$parameter, "; ", 
+                   "valor p = ", format(t12_chi2si$p.value, nsmall = 5,
+                                        scientific = TRUE))
+
+m12 <- subset(t12_dep, atend.x == FALSE)
+t12_chi2no <- chisq.test(matrix(data = c(m12$n_18, m12$n_25, m12$n_45, 
+                                        m12$n_59, m12$n_60), ncol = 5))
+
+tx5_chi2no <- paste0("Chi2 Buscó_atención FALSE= ", 
+                     format(t12_chi2no$statistic, 
+                            nsmall = 3), "; ", "df = ", 
+                     t12_chi2no$parameter, "; ", "valor p = ", 
+                     format(t12_chi2no$p.value, nsmall = 5, 
+                            scientific = TRUE))
+#Imprimimos la tabla
+t12_dep$atend.x <- NULL
+t12_dep %>% arrange(factor
+                    (nivel.x, levels = c("Bajo", "Leve", "Medio", "Alto"))) %>%
+  group_by(atend) %>%
   gt() %>% 
-  tab_header( 
-    title = "Tabla 5: Total de solicitudes de atención por ansiedad.",
-    subtitle = "Usuarios de la plataforma de autodiagnóstico de CIJ, 2021-2022") %>%
-  cols_label(Grupo_edad = "Grupo de edad",
-             Si_atencion = "n", propsi = "%",
-             No_atencion = "n", propno = "%") %>%
-  tab_spanner(label = "Si solicitó atención", 
-              columns = c(Si_atencion, propsi)) %>%
-  tab_spanner(label = "No solicitó atención", 
-              columns = c(No_atencion, propno))
-
-
-
+  tab_header( title = "Tabla 10: Busqueda de atención en usuarios con sintomatología depresiva.", 
+              subtitle = "Plataforma de autodiagnóstico de CIJ, 2021-2022.") %>%
+    tab_spanner( label = "< 18 años", 
+                 columns = c(n_18d, prop_18d)) %>%
+    tab_spanner( label = "18 a 25 años", 
+                 columns = c(n_25d, prop_25d)) %>% 
+    tab_spanner( label = "26 a 45 años", 
+                 columns = c(n_45d, prop_45d)) %>%
+    tab_spanner( label = "46 a 59 años", 
+                 columns = c(n_59d, prop_59d)) %>% 
+    tab_spanner( label = "> 60 años", 
+                 columns = c(n_60d, prop_60d)) %>% 
+#    tab_spanner( label = "Total", 
+#                 columns = c(total, prop)) %>%
+  cols_label(nivel.x = "Buscó atención",
+             n_18d = "n", prop_18d = "%",
+             n_25d = "n", prop_25d = "%",
+             n_45d = "n", prop_45d = "%",
+             n_59d = "n", prop_59d = "%",
+             n_60d = "n", prop_60d = "%") %>%
+#             total = "n", prop = "%") %>%  
+  tab_source_note(source_note = tx5_chi2no) %>%
+  tab_source_note(source_note = tx5_chi2si) %>%
+  summary_rows( groups = TRUE, 
+                columns = c(n_18d, n_25d, n_45d, n_59d, n_60d), 
+                fns = list(Total = ~sum(.)), formatter = fmt_number, 
+                use_seps = FALSE, decimal = 0) %>%
+  grand_summary_rows( columns = c(n_18d, n_25d, n_45d, n_59d, n_60d), 
+                fns = list(Total = ~sum(.)), formatter = fmt_number, 
+                use_seps = FALSE, decimal = 0)
 ```
+
+
 El tiempo promedio que tardaron los usuarios en recibir atención (ya sea presencial o virtual) por parte del personal de CIJ fue `r format(mean(ansi2$DIAS.TRANSCURRIDOS, na.rm=TRUE), digits = 2)` con una desviación estándar de `r format(sd(ansi2$DIAS.TRANSCURRIDOS, na.rm=TRUE), digits = 2)` dias.
+
+
 # Discusión
 
 ## Caracteristicas de los usuarios de la herramienta de depresión y ansiedad
